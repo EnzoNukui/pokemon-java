@@ -19,14 +19,21 @@ public class ConnectionFactory {
 
     public static Connection getConnection() {
         try {
-            if (connection != null && connection.isClosed()) {
+            if (connection != null && !connection.isClosed()) {
                 return connection;
             }
 
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            String url = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
-            String usuario = "RM569770";
-            String senha = "051107";
+
+            //busca dados de conexão das variáveis de ambiente
+            String url = System.getenv("DB_URL");
+            String usuario = System.getenv("DB_USER");
+            String senha = System.getenv("DB_PASSWORD");
+
+            if (url == null || usuario
+                    == null || senha == null) {
+                throw new RuntimeException("As variaveis de ambiente do banco não estão configuradas corretamente");
+            }
 
             connection = DriverManager.getConnection(url,usuario,senha);
 
